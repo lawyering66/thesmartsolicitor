@@ -169,10 +169,10 @@ textarea.field { width: 100%; min-height: 76px; resize: vertical; line-height: 1
       <details style="margin-top:16px">
         <summary class="eyebrow" style="cursor:pointer">Add a deadline</summary>
         <form class="add" id="dl-form" style="margin-top:10px">
-          <input class="field title" id="dl-title" placeholder="Name, e.g. NIHR fellowship round 2" required aria-label="Deadline name">
+          <input class="field title" id="dl-title" placeholder="Name, e.g. Training contract, Firm X" required aria-label="Deadline name">
           <input class="field" id="dl-org" placeholder="Organisation" aria-label="Organisation">
           <select class="field" id="dl-kind" aria-label="Type">
-            <option value="fellowship">Fellowship</option><option value="grant">Grant</option><option value="prize">Prize</option><option value="event">Event</option><option value="job">Job</option>
+            <option value="training">Training contract</option><option value="vacscheme">Vacation scheme</option><option value="pupillage">Pupillage</option><option value="scholarship">Scholarship</option><option value="exam">Exam</option><option value="event">Event</option>
           </select>
           <input class="field" id="dl-date" type="date" required aria-label="Closing date">
           <button class="btn primary" type="submit">Add</button>
@@ -210,8 +210,8 @@ textarea.field { width: 100%; min-height: 76px; resize: vertical; line-height: 1
         <ul class="moved" id="nextweek"></ul>
       </div>
       <div class="prompts">
-        <label><span class="eyebrow">What went well</span><textarea class="field" id="r-wins" placeholder="Submitted, finished, heard back…"></textarea></label>
-        <label><span class="eyebrow">What got in the way</span><textarea class="field" id="r-blockers" placeholder="Rota, on-call, waiting on someone…"></textarea></label>
+        <label><span class="eyebrow">What went well</span><textarea class="field" id="r-wins" placeholder="Submitted an application, got an interview, finished SQE revision…"></textarea></label>
+        <label><span class="eyebrow">What got in the way</span><textarea class="field" id="r-blockers" placeholder="Workload, waiting on a reference, unclear requirements…"></textarea></label>
         <label><span class="eyebrow">Next week's focus</span><textarea class="field" id="r-focus" placeholder="The one or two things that matter most"></textarea></label>
       </div>
     </div>
@@ -223,7 +223,7 @@ textarea.field { width: 100%; min-height: 76px; resize: vertical; line-height: 1
 
 <script>
 (function () {
-  var KINDS = { prize: ['Prize', 'var(--k-prize)'], grant: ['Grant', 'var(--k-grant)'], event: ['Event', 'var(--k-event)'], fellowship: ['Fellowship', 'var(--k-fellowship)'], job: ['Job', 'var(--k-job)'] };
+  var KINDS = { training: ['Training contract', 'var(--k-fellowship)'], vacscheme: ['Vacation scheme', 'var(--k-job)'], pupillage: ['Pupillage', 'var(--k-prize)'], scholarship: ['Scholarship', 'var(--k-grant)'], exam: ['Exam', 'var(--accent)'], event: ['Event', 'var(--k-event)'] };
   var WINDOW = 60;
 
   // ---------- dates ----------
@@ -247,17 +247,17 @@ textarea.field { width: 100%; min-height: 76px; resize: vertical; line-height: 1
   var db = null, showAllDeadlines = false, showDone = false;
   var SEED = {
     tasks: [
-      { id: 's1', title: 'Sync with work iCal', due: iso(addDays(now, -1)), done: false },
-      { id: 's2', title: 'Follow up on PHO paper', due: iso(addDays(now, -3)), done: false },
-      { id: 's3', title: 'Reply to Jamie', due: iso(addDays(now, -3)), done: false }
+      { id: 's1', title: 'Draft personal statement for training contract', due: iso(addDays(now, -3)), done: false },
+      { id: 's2', title: 'Ask supervisor for a reference', due: iso(addDays(now, -3)), done: false },
+      { id: 's3', title: 'Book SQE1 prep course', due: iso(addDays(now, -1)), done: false }
     ],
     deadlines: [
-      { id: 'd1', title: 'RSNA Knee Abnormality Detection AI Challenge 2026', org: 'RSNA', kind: 'prize', date: '2026-10-22', kept: false },
-      { id: 'd2', title: 'Rainwater Tau Consortium: AI-enabled tauopathy research funding', org: 'Rainwater Charitable Foundation', kind: 'grant', date: '2026-10-30', kept: false },
-      { id: 'd3', title: 'AI in Health Summit 2026', org: 'Economist Impact', kind: 'event', date: '2026-11-04', kept: false },
-      { id: 'd4', title: 'Crick AI/ML Clinical Fellowships 2027', org: 'Francis Crick Institute', kind: 'fellowship', date: '2026-11-12', kept: false },
-      { id: 'd5', title: 'Frontier AI: SME Champions, Phase 1', org: '', kind: 'grant', date: '2026-11-12', kept: true },
-      { id: 'd6', title: 'NHS Fellowship in Clinical AI, Cohort 6', org: 'NHS England', kind: 'fellowship', date: '2026-11-17', kept: false }
+      { id: 'd1', title: 'Law fair: meet firms and chambers', org: 'Example', kind: 'event', date: '2026-10-15', kept: false },
+      { id: 'd2', title: 'SQE1 registration closes', org: 'Example', kind: 'exam', date: '2026-10-20', kept: false },
+      { id: 'd3', title: 'Vacation scheme application, City firm', org: 'Example', kind: 'vacscheme', date: '2026-11-06', kept: false },
+      { id: 'd4', title: 'Training contract application, mid-size firm', org: 'Example', kind: 'training', date: '2026-11-20', kept: true },
+      { id: 'd5', title: 'Pupillage Gateway: chambers application', org: 'Example', kind: 'pupillage', date: '2026-11-27', kept: false },
+      { id: 'd6', title: 'Inns of Court scholarship application', org: 'Example', kind: 'scholarship', date: '2026-12-04', kept: false }
     ]
   };
 
@@ -368,7 +368,7 @@ textarea.field { width: 100%; min-height: 76px; resize: vertical; line-height: 1
     }).join('');
     $('timeline').innerHTML = within.length
       ? '<div class="axis eyebrow"><span></span><span class="ticks"><span>Today</span><span>+20d</span><span>+40d</span><span>+60d</span></span></div>' + rows
-      : '<div class="empty">No deadlines in the next 60 days. Add one below.</div>';
+      : '<div class="empty">No application deadlines in the next 60 days. Add one below.</div>';
 
     // cards
     var list = showAllDeadlines ? upcoming : upcoming.slice(0, 4);
