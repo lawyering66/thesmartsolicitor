@@ -1,0 +1,445 @@
+<title>Career Desk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one column of stat tiles, then deadlines + tasks side by side, weekly review full width beneath. */
+:root {
+  --bg: #060b1c;
+  --surface: #0c1434;
+  --surface-2: #111b42;
+  --line: #1c2a5a;
+  --fg: #eef2ff;
+  --muted: #8b97c2;
+  --accent: #7d96ff;
+  --accent-ink: #0a1230;
+  --warn: #f5a54a;
+  --crit: #ff7a88;
+  --ok: #54d8ab;
+  --k-prize: #ef7fa6;
+  --k-grant: #f5a54a;
+  --k-event: #6f93f5;
+  --k-fellowship: #b08cf5;
+  --k-job: #54d8ab;
+  --font-body: "Geist", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #f2f5fc; --surface: #ffffff; --surface-2: #eaeffb; --line: #d3dbf0;
+    --fg: #0d1636; --muted: #56628c; --accent: #3a5bd9; --accent-ink: #ffffff;
+    --warn: #b86a00; --crit: #c5283d; --ok: #0d8a64;
+    --k-prize: #c23b6c; --k-grant: #b86a00; --k-event: #2f55c9; --k-fellowship: #7a49c9; --k-job: #0d8a64;
+    color-scheme: light;
+  }
+}
+:root[data-theme="light"] {
+  --bg: #f2f5fc; --surface: #ffffff; --surface-2: #eaeffb; --line: #d3dbf0;
+  --fg: #0d1636; --muted: #56628c; --accent: #3a5bd9; --accent-ink: #ffffff;
+  --warn: #b86a00; --crit: #c5283d; --ok: #0d8a64;
+  --k-prize: #c23b6c; --k-grant: #b86a00; --k-event: #2f55c9; --k-fellowship: #7a49c9; --k-job: #0d8a64;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font: 400 15px/1.5 var(--font-body); padding-inline: 16px; padding-block: 28px 64px; }
+.wrap { max-width: 1180px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+.mono, .eyebrow { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+h1 { font-size: clamp(34px, 6vw, 52px); line-height: 1.02; letter-spacing: -.035em; font-weight: 600; margin: 6px 0 0; text-wrap: balance; }
+h2 { font-size: 18px; letter-spacing: -.01em; font-weight: 600; margin: 0; }
+.sub { color: var(--muted); margin: 10px 0 0; max-width: 60ch; }
+.sub b { color: var(--fg); font-weight: 600; }
+button, input, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.panel { background: linear-gradient(180deg, var(--surface-2), var(--surface)); border: 1px solid var(--line); border-radius: 16px; padding: 20px; min-width: 0; }
+.panel-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+
+.stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.stat { border: 1px solid var(--line); background: var(--surface); border-radius: 14px; padding: 14px 16px; display: flex; flex-direction: column; gap: 4px; }
+.stat .n { font-size: 34px; font-weight: 600; letter-spacing: -.03em; line-height: 1; font-variant-numeric: tabular-nums; }
+.stat.crit .n { color: var(--crit); }
+.stat.warn .n { color: var(--warn); }
+.stat.ok .n { color: var(--ok); }
+
+.cols { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+
+/* deadlines */
+.legend { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 8px; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.dot { width: 8px; height: 8px; border-radius: 2px; background: var(--c, var(--accent)); display: inline-block; flex: none; }
+.axis { display: grid; grid-template-columns: minmax(120px, 34%) 1fr; gap: 12px; margin-top: 12px; }
+.axis .ticks { display: flex; justify-content: space-between; }
+.drow { display: grid; grid-template-columns: minmax(120px, 34%) 1fr; gap: 12px; align-items: center; padding: 7px 0; border-top: 1px solid color-mix(in srgb, var(--line) 60%, transparent); }
+.drow .name { font-size: 13.5px; line-height: 1.3; min-width: 0; display: flex; gap: 8px; align-items: center; }
+.drow .name span.t { overflow-wrap: anywhere; }
+.drow.kept .name span.t { font-weight: 600; }
+.track { position: relative; height: 18px; }
+.track::before { content: ""; position: absolute; left: 0; right: 0; top: 50%; border-top: 1px dashed var(--line); }
+.bar { position: absolute; left: 0; top: 50%; height: 4px; transform: translateY(-50%); border-radius: 2px; background: linear-gradient(90deg, transparent, var(--c)); }
+.mark { position: absolute; top: 50%; width: 11px; height: 11px; transform: translate(-50%, -50%); border-radius: 50%; background: var(--c); box-shadow: 0 0 0 3px var(--surface); }
+.mark.hollow { background: var(--surface); border: 2px solid var(--c); box-shadow: none; }
+.days { position: absolute; top: 50%; transform: translateY(-50%); font-family: var(--font-mono); font-size: 11px; color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.today-line { position: absolute; left: 34%; top: 0; bottom: 0; }
+.dlist { display: flex; flex-direction: column; gap: 10px; margin-top: 18px; }
+.ditem { display: grid; grid-template-columns: 52px minmax(0, 1fr) auto; gap: 14px; align-items: center; border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; background: var(--surface); }
+.ditem.soon { border-color: color-mix(in srgb, var(--warn) 55%, var(--line)); }
+.cal { text-align: center; border: 1px solid var(--line); border-radius: 10px; padding: 6px 0; background: var(--surface-2); }
+.cal .m { font-family: var(--font-mono); font-size: 10px; letter-spacing: .1em; color: var(--muted); display: block; }
+.cal .d { font-size: 20px; font-weight: 600; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.ditem .k { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--c); }
+.ditem .tt { font-weight: 600; font-size: 14.5px; line-height: 1.3; overflow-wrap: anywhere; }
+.ditem .meta { color: var(--muted); font-size: 12.5px; }
+.btn { border: 1px solid var(--line); background: var(--surface); border-radius: 9px; padding: 6px 12px; font-size: 13px; font-weight: 500; }
+.btn:hover { border-color: var(--accent); }
+.btn.on { border-color: var(--ok); color: var(--ok); }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 600; }
+.btn.ghost { border-color: transparent; background: transparent; color: var(--muted); padding: 6px 8px; }
+.btn.ghost:hover { color: var(--crit); }
+.more { background: none; border: 0; color: var(--accent); padding: 8px 0 0; font-size: 13px; }
+
+/* tasks */
+.add { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+.field { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 9px 12px; min-width: 0; }
+.add .field.title { flex: 1 1 180px; }
+.group-h { display: flex; justify-content: space-between; margin: 16px 0 6px; }
+.group-h.crit { color: var(--crit); }
+.trow { display: grid; grid-template-columns: 22px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 9px 0; border-top: 1px solid color-mix(in srgb, var(--line) 60%, transparent); }
+.chk { width: 20px; height: 20px; border-radius: 6px; border: 1.5px solid var(--muted); background: transparent; padding: 0; display: grid; place-items: center; color: var(--accent-ink); }
+.chk:hover { border-color: var(--accent); }
+.trow.done .chk { background: var(--ok); border-color: var(--ok); }
+.trow.done .tt { text-decoration: line-through; color: var(--muted); }
+.trow .tt { overflow-wrap: anywhere; }
+.trow .acts { display: flex; gap: 6px; align-items: center; }
+.ago { font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
+.ago.crit { color: var(--crit); }
+.pill { font-family: var(--font-mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 3px 10px; }
+.empty { color: var(--muted); border: 1px dashed var(--line); border-radius: 12px; padding: 18px; text-align: center; margin-top: 8px; }
+
+/* weekly review */
+.rev-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 24px; }
+.moved { display: flex; flex-direction: column; gap: 0; }
+.moved li { list-style: none; display: flex; gap: 10px; align-items: baseline; padding: 7px 0; border-top: 1px solid color-mix(in srgb, var(--line) 60%, transparent); }
+.moved { padding: 0; margin: 0; }
+.moved .ok { color: var(--ok); font-family: var(--font-mono); font-size: 12px; }
+.prompts { display: flex; flex-direction: column; gap: 14px; }
+.prompts label { display: flex; flex-direction: column; gap: 6px; }
+textarea.field { width: 100%; min-height: 76px; resize: vertical; line-height: 1.45; }
+.saved { color: var(--ok); opacity: 0; transition: opacity .2s; }
+.saved.show { opacity: 1; }
+.toast { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); background: var(--crit); color: #fff; padding: 10px 16px; border-radius: 10px; font-size: 13px; max-width: calc(100% - 32px); }
+.local-note { border: 1px dashed var(--line); border-radius: 10px; padding: 8px 12px; color: var(--muted); font-size: 12.5px; }
+
+@media (max-width: 900px) {
+  .cols, .rev-grid { grid-template-columns: minmax(0, 1fr); }
+  .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 520px) {
+  .panel { padding: 16px; }
+  .axis, .drow { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+  .axis > :first-child { display: none; }
+  .ditem { grid-template-columns: 46px minmax(0, 1fr); }
+  .ditem .acts { grid-column: 1 / -1; }
+  .trow { grid-template-columns: 22px minmax(0, 1fr); }
+  .trow .acts { grid-column: 2; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow" id="today-label"></div>
+    <h1 id="greeting">Good day.</h1>
+    <p class="sub" id="lede"></p>
+  </header>
+
+  <div class="stats" id="stats"></div>
+
+  <div class="cols">
+    <section class="panel" aria-labelledby="dl-h">
+      <div class="panel-head">
+        <h2 id="dl-h">Application deadlines</h2>
+        <span class="eyebrow">Next 60 days</span>
+      </div>
+      <div class="legend eyebrow" id="legend"></div>
+      <div id="timeline"></div>
+      <div class="dlist" id="dlist"></div>
+      <button class="more" id="dl-more" hidden></button>
+      <details style="margin-top:16px">
+        <summary class="eyebrow" style="cursor:pointer">Add a deadline</summary>
+        <form class="add" id="dl-form" style="margin-top:10px">
+          <input class="field title" id="dl-title" placeholder="Name, e.g. NIHR fellowship round 2" required aria-label="Deadline name">
+          <input class="field" id="dl-org" placeholder="Organisation" aria-label="Organisation">
+          <select class="field" id="dl-kind" aria-label="Type">
+            <option value="fellowship">Fellowship</option><option value="grant">Grant</option><option value="prize">Prize</option><option value="event">Event</option><option value="job">Job</option>
+          </select>
+          <input class="field" id="dl-date" type="date" required aria-label="Closing date">
+          <button class="btn primary" type="submit">Add</button>
+        </form>
+      </details>
+    </section>
+
+    <section class="panel" aria-labelledby="tk-h">
+      <div class="panel-head">
+        <h2 id="tk-h">Tasks</h2>
+        <span class="eyebrow" id="tk-count"></span>
+      </div>
+      <form class="add" id="tk-form">
+        <input class="field title" id="tk-title" placeholder="New task" required aria-label="New task">
+        <input class="field" id="tk-due" type="date" aria-label="Due date">
+        <button class="btn primary" type="submit">Add</button>
+      </form>
+      <div id="tasks"></div>
+    </section>
+  </div>
+
+  <section class="panel" aria-labelledby="wr-h">
+    <div class="panel-head">
+      <div>
+        <div class="eyebrow" id="wr-range"></div>
+        <h2 id="wr-h" style="margin-top:4px">Weekly review</h2>
+      </div>
+      <span class="eyebrow saved" id="saved">Saved</span>
+    </div>
+    <div class="rev-grid">
+      <div>
+        <div class="eyebrow" style="margin-bottom:8px">What moved this week</div>
+        <ul class="moved" id="moved"></ul>
+        <div class="eyebrow" style="margin:18px 0 8px">Closing next week</div>
+        <ul class="moved" id="nextweek"></ul>
+      </div>
+      <div class="prompts">
+        <label><span class="eyebrow">What went well</span><textarea class="field" id="r-wins" placeholder="Submitted, finished, heard back…"></textarea></label>
+        <label><span class="eyebrow">What got in the way</span><textarea class="field" id="r-blockers" placeholder="Rota, on-call, waiting on someone…"></textarea></label>
+        <label><span class="eyebrow">Next week's focus</span><textarea class="field" id="r-focus" placeholder="The one or two things that matter most"></textarea></label>
+      </div>
+    </div>
+  </section>
+
+  <div class="local-note" id="local-note" hidden>Changes are not being saved because shared storage is unavailable in this view. Open the published page while signed in to keep them.</div>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(function () {
+  var KINDS = { prize: ['Prize', 'var(--k-prize)'], grant: ['Grant', 'var(--k-grant)'], event: ['Event', 'var(--k-event)'], fellowship: ['Fellowship', 'var(--k-fellowship)'], job: ['Job', 'var(--k-job)'] };
+  var WINDOW = 60;
+
+  // ---------- dates ----------
+  function pad(n) { return (n < 10 ? '0' : '') + n; }
+  function iso(d) { return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+  function parse(s) { var p = s.split('-'); return new Date(+p[0], +p[1] - 1, +p[2]); }
+  function addDays(d, n) { var x = new Date(d.getFullYear(), d.getMonth(), d.getDate() + n); return x; }
+  function diff(a, b) { return Math.round((parse(a) - parse(b)) / 864e5); }
+  var now = new Date();
+  var TODAY = iso(now);
+  function mondayOf(d) { var x = new Date(d.getFullYear(), d.getMonth(), d.getDate()); x.setDate(x.getDate() - ((x.getDay() + 6) % 7)); return x; }
+  var WEEK0 = iso(mondayOf(now)), WEEK1 = iso(addDays(mondayOf(now), 6));
+  var MON = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+  var DAY = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  function short(s) { var d = parse(s); return d.getDate() + ' ' + MON[d.getMonth()][0] + MON[d.getMonth()].slice(1).toLowerCase(); }
+  function esc(s) { var d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; }
+  function $(id) { return document.getElementById(id); }
+
+  // ---------- state ----------
+  var state = { tasks: [], deadlines: [], review: {} };
+  var db = null, showAllDeadlines = false, showDone = false;
+  var SEED = {
+    tasks: [
+      { id: 's1', title: 'Sync with work iCal', due: iso(addDays(now, -1)), done: false },
+      { id: 's2', title: 'Follow up on PHO paper', due: iso(addDays(now, -3)), done: false },
+      { id: 's3', title: 'Reply to Jamie', due: iso(addDays(now, -3)), done: false }
+    ],
+    deadlines: [
+      { id: 'd1', title: 'RSNA Knee Abnormality Detection AI Challenge 2026', org: 'RSNA', kind: 'prize', date: '2026-10-22', kept: false },
+      { id: 'd2', title: 'Rainwater Tau Consortium: AI-enabled tauopathy research funding', org: 'Rainwater Charitable Foundation', kind: 'grant', date: '2026-10-30', kept: false },
+      { id: 'd3', title: 'AI in Health Summit 2026', org: 'Economist Impact', kind: 'event', date: '2026-11-04', kept: false },
+      { id: 'd4', title: 'Crick AI/ML Clinical Fellowships 2027', org: 'Francis Crick Institute', kind: 'fellowship', date: '2026-11-12', kept: false },
+      { id: 'd5', title: 'Frontier AI: SME Champions, Phase 1', org: '', kind: 'grant', date: '2026-11-12', kept: true },
+      { id: 'd6', title: 'NHS Fellowship in Clinical AI, Cohort 6', org: 'NHS England', kind: 'fellowship', date: '2026-11-17', kept: false }
+    ]
+  };
+
+  function toast(msg) { var t = $('toast'); t.textContent = msg; t.hidden = false; clearTimeout(toast.h); toast.h = setTimeout(function () { t.hidden = true; }, 3500); }
+  function id(p) { return p + Date.now().toString(36) + Math.random().toString(36).slice(2, 5); }
+
+  // ---------- persistence ----------
+  function write(coll, doc, data) {
+    if (!db) { applyLocal(coll, doc, data); return; }
+    var ref = db.collection(coll).doc(doc);
+    var p = data === null ? ref.delete() : ref.set(data);
+    p.catch(function (e) { toast(e && e.code === 'invalid_argument' ? 'You can view this page but not change it.' : 'Could not save that change. Try again.'); });
+  }
+  function applyLocal(coll, doc, data) {
+    if (coll === 'reviews') { state.review = data || {}; return; }
+    var arr = state[coll === 'tasks' ? 'tasks' : 'deadlines'];
+    var i = arr.findIndex(function (x) { return x.id === doc; });
+    if (data === null) { if (i > -1) arr.splice(i, 1); }
+    else if (i > -1) arr[i] = data; else arr.push(data);
+    render();
+  }
+  function snapList(snap) { return snap.docs.map(function (d) { var o = Object.assign({}, d.data()); o.id = d.id; return o; }); }
+  function clean(o) { var c = Object.assign({}, o); delete c.id; return c; }
+
+  // ---------- actions ----------
+  function findTask(i) { return state.tasks.find(function (t) { return t.id === i; }); }
+  function findDl(i) { return state.deadlines.find(function (t) { return t.id === i; }); }
+  function setTask(t, patch) { var n = Object.assign({}, t, patch); write('tasks', t.id, clean(n)); if (!db) applyLocal('tasks', t.id, n); }
+  function setDl(t, patch) { var n = Object.assign({}, t, patch); write('deadlines', t.id, clean(n)); if (!db) applyLocal('deadlines', t.id, n); }
+
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-act]'); if (!b) return;
+    var act = b.dataset.act, key = b.dataset.id;
+    if (act === 'toggle') { var t = findTask(key); setTask(t, t.done ? { done: false, doneAt: null } : { done: true, doneAt: TODAY }); }
+    else if (act === 'tmrw') setTask(findTask(key), { due: iso(addDays(now, 1)) });
+    else if (act === 'wk') setTask(findTask(key), { due: iso(addDays(now, 7)) });
+    else if (act === 'deltask') { write('tasks', key, null); if (!db) applyLocal('tasks', key, null); }
+    else if (act === 'keep') { var d = findDl(key); setDl(d, { kept: !d.kept }); }
+    else if (act === 'deldl') { write('deadlines', key, null); if (!db) applyLocal('deadlines', key, null); }
+    else if (act === 'showdone') { showDone = !showDone; render(); }
+  });
+  $('dl-more').addEventListener('click', function () { showAllDeadlines = !showAllDeadlines; render(); });
+
+  $('tk-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var title = $('tk-title').value.trim(); if (!title) return;
+    var t = { title: title, due: $('tk-due').value || TODAY, done: false };
+    var i = id('t'); write('tasks', i, t); if (!db) applyLocal('tasks', i, Object.assign({ id: i }, t));
+    $('tk-title').value = '';
+  });
+  $('dl-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var d = { title: $('dl-title').value.trim(), org: $('dl-org').value.trim(), kind: $('dl-kind').value, date: $('dl-date').value, kept: false };
+    if (!d.title || !d.date) return;
+    var i = id('d'); write('deadlines', i, d); if (!db) applyLocal('deadlines', i, Object.assign({ id: i }, d));
+    $('dl-title').value = ''; $('dl-org').value = ''; $('dl-date').value = '';
+  });
+
+  var saveTimer;
+  ['wins', 'blockers', 'focus'].forEach(function (k) {
+    $('r-' + k).addEventListener('input', function () {
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(function () {
+        var data = { wins: $('r-wins').value, blockers: $('r-blockers').value, focus: $('r-focus').value, week: WEEK0 };
+        state.review = data;
+        if (db) db.collection('reviews').doc(WEEK0).set(data).then(flash, function () { toast('Could not save your review. Try again.'); });
+        else flash();
+      }, 700);
+    });
+  });
+  function flash() { var s = $('saved'); s.classList.add('show'); setTimeout(function () { s.classList.remove('show'); }, 1400); }
+
+  // ---------- render ----------
+  function kindOf(k) { return KINDS[k] || KINDS.event; }
+  function dlLabel(n) { return n === 0 ? 'today' : n + 'd'; }
+
+  function render() {
+    var open = state.tasks.filter(function (t) { return !t.done; });
+    var overdue = open.filter(function (t) { return t.due < TODAY; });
+    var dueWeek = open.filter(function (t) { return t.due >= TODAY && t.due <= WEEK1; });
+    var doneWeek = state.tasks.filter(function (t) { return t.done && t.doneAt && t.doneAt >= WEEK0 && t.doneAt <= WEEK1; });
+    var upcoming = state.deadlines.filter(function (d) { return d.date >= TODAY; }).sort(function (a, b) { return a.date < b.date ? -1 : 1; });
+    var in14 = upcoming.filter(function (d) { return diff(d.date, TODAY) <= 14; });
+
+    var h = now.getHours();
+    $('greeting').textContent = h < 12 ? 'Good morning.' : h < 18 ? 'Good afternoon.' : 'Good evening.';
+    $('today-label').textContent = DAY[now.getDay()] + ' ' + now.getDate() + ' ' + MON[now.getMonth()];
+    var next = upcoming[0];
+    $('lede').innerHTML = (overdue.length ? '<b>' + overdue.length + ' overdue task' + (overdue.length > 1 ? 's' : '') + '</b>. ' : 'Nothing overdue. ') +
+      (next ? 'Next deadline: <b>' + esc(next.title) + '</b> in ' + diff(next.date, TODAY) + ' days.' : 'No deadlines coming up.');
+
+    $('stats').innerHTML =
+      stat(overdue.length, 'Overdue tasks', overdue.length ? 'crit' : '') +
+      stat(dueWeek.length, 'Due this week', '') +
+      stat(in14.length, 'Deadlines in 14 days', in14.length ? 'warn' : '') +
+      stat(doneWeek.length, 'Done this week', 'ok');
+
+    // timeline
+    var within = upcoming.filter(function (d) { return diff(d.date, TODAY) <= WINDOW; });
+    var kinds = {}; within.forEach(function (d) { kinds[d.kind] = 1; });
+    $('legend').innerHTML = Object.keys(kinds).map(function (k) { return '<span><i class="dot" style="--c:' + kindOf(k)[1] + '"></i>' + kindOf(k)[0] + 's</span>'; }).join('') + '<span><i class="dot" style="background:none;border:2px solid var(--fg);border-radius:50%"></i>Open = not kept</span>';
+    var rows = within.map(function (d) {
+      var n = diff(d.date, TODAY), pct = Math.min(100, n / WINDOW * 100), c = kindOf(d.kind)[1];
+      var labelSide = pct > 80 ? 'right:' + (100 - pct + 2.5) + '%' : 'left:' + (pct + 2.5) + '%';
+      return '<div class="drow' + (d.kept ? ' kept' : '') + '" style="--c:' + c + '"><div class="name"><i class="dot"></i><span class="t">' + esc(d.title) + '</span></div>' +
+        '<div class="track">' + (d.kept ? '<span class="bar" style="width:' + pct + '%"></span>' : '') +
+        '<span class="mark' + (d.kept ? '' : ' hollow') + '" style="left:' + pct + '%"></span><span class="days" style="' + labelSide + '">' + dlLabel(n) + '</span></div></div>';
+    }).join('');
+    $('timeline').innerHTML = within.length
+      ? '<div class="axis eyebrow"><span></span><span class="ticks"><span>Today</span><span>+20d</span><span>+40d</span><span>+60d</span></span></div>' + rows
+      : '<div class="empty">No deadlines in the next 60 days. Add one below.</div>';
+
+    // cards
+    var list = showAllDeadlines ? upcoming : upcoming.slice(0, 4);
+    $('dlist').innerHTML = list.map(function (d) {
+      var n = diff(d.date, TODAY), dt = parse(d.date), c = kindOf(d.kind)[1];
+      return '<div class="ditem' + (n <= 7 ? ' soon' : '') + '" style="--c:' + c + '"><div class="cal"><span class="m">' + MON[dt.getMonth()] + '</span><span class="d">' + dt.getDate() + '</span></div>' +
+        '<div style="min-width:0"><div class="k">' + kindOf(d.kind)[0] + (d.org ? ' · ' + esc(d.org) : '') + '</div><div class="tt">' + esc(d.title) + '</div><div class="meta">Closes ' + DAY[dt.getDay()] + ' ' + short(d.date) + ' · ' + (n === 0 ? 'today' : n + ' days left') + '</div></div>' +
+        '<div class="acts" style="display:flex;gap:4px"><button class="btn' + (d.kept ? ' on' : '') + '" data-act="keep" data-id="' + d.id + '" aria-pressed="' + !!d.kept + '">' + (d.kept ? 'Kept' : 'Keep') + '</button><button class="btn ghost" data-act="deldl" data-id="' + d.id + '" aria-label="Remove ' + esc(d.title) + '">✕</button></div></div>';
+    }).join('');
+    var more = $('dl-more');
+    more.hidden = upcoming.length <= 4;
+    more.textContent = showAllDeadlines ? 'Show fewer' : 'Show all ' + upcoming.length + ' deadlines';
+
+    // tasks
+    var today = open.filter(function (t) { return t.due === TODAY; });
+    var later = open.filter(function (t) { return t.due > TODAY; }).sort(function (a, b) { return a.due < b.due ? -1 : 1; });
+    overdue.sort(function (a, b) { return a.due < b.due ? -1 : 1; });
+    var done = state.tasks.filter(function (t) { return t.done; }).sort(function (a, b) { return (b.doneAt || '') < (a.doneAt || '') ? -1 : 1; });
+    $('tk-count').textContent = open.length + ' open';
+    var out = '';
+    out += group('Overdue · ' + overdue.length, overdue, 'crit');
+    out += group('Today · ' + today.length, today, '');
+    out += group('Later · ' + later.length, later, '');
+    if (!open.length) out += '<div class="empty">All clear. Add a task above.</div>';
+    if (done.length) {
+      out += '<div class="group-h eyebrow"><button class="more" style="padding:0;color:var(--muted)" data-act="showdone">' + (showDone ? 'Hide' : 'Show') + ' done · ' + done.length + '</button></div>';
+      if (showDone) out += done.slice(0, 15).map(taskRow).join('');
+    }
+    $('tasks').innerHTML = out;
+
+    // review
+    $('wr-range').textContent = 'Week of ' + short(WEEK0) + ' to ' + short(WEEK1);
+    $('moved').innerHTML = doneWeek.length
+      ? doneWeek.map(function (t) { return '<li><span class="ok">DONE</span><span>' + esc(t.title) + '</span></li>'; }).join('')
+      : '<li><span class="mono">Nothing ticked off yet this week.</span></li>';
+    var nw0 = iso(addDays(parse(WEEK0), 7)), nw1 = iso(addDays(parse(WEEK0), 13));
+    var nw = state.deadlines.filter(function (d) { return d.date >= TODAY && d.date <= nw1; }).sort(function (a, b) { return a.date < b.date ? -1 : 1; });
+    $('nextweek').innerHTML = nw.length
+      ? nw.map(function (d) { return '<li><span class="mono" style="min-width:52px">' + short(d.date) + '</span><span>' + esc(d.title) + '</span></li>'; }).join('')
+      : '<li><span class="mono">No deadlines in the next two weeks.</span></li>';
+    ['wins', 'blockers', 'focus'].forEach(function (k) {
+      var el = $('r-' + k);
+      if (document.activeElement !== el && el.value !== (state.review[k] || '')) el.value = state.review[k] || '';
+    });
+  }
+  function stat(n, label, cls) { return '<div class="stat ' + cls + '"><span class="n">' + n + '</span><span class="eyebrow">' + label + '</span></div>'; }
+  function group(label, items, cls) {
+    if (!items.length) return '';
+    return '<div class="group-h eyebrow ' + cls + '"><span>' + label + '</span></div>' + items.map(taskRow).join('');
+  }
+  function taskRow(t) {
+    var n = diff(t.due, TODAY), ago = t.done ? 'done' : n < 0 ? (-n) + 'd ago' : n === 0 ? 'today' : short(t.due);
+    return '<div class="trow' + (t.done ? ' done' : '') + '"><button class="chk" data-act="toggle" data-id="' + t.id + '" aria-label="' + (t.done ? 'Reopen' : 'Complete') + ' ' + esc(t.title) + '">' + (t.done ? '<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 6.5l2.6 2.6L10 3.5"/></svg>' : '') + '</button>' +
+      '<span class="tt">' + esc(t.title) + '</span><span class="acts"><span class="ago' + (!t.done && n < 0 ? ' crit' : '') + '">' + ago + '</span>' +
+      (t.done ? '' : '<button class="pill" data-act="tmrw" data-id="' + t.id + '">Tmrw</button><button class="pill" data-act="wk" data-id="' + t.id + '">+1w</button>') +
+      '<button class="btn ghost" data-act="deltask" data-id="' + t.id + '" aria-label="Delete ' + esc(t.title) + '">✕</button></span></div>';
+  }
+
+  // ---------- boot ----------
+  $('tk-due').value = TODAY;
+  render();
+  function startLocal() { state.tasks = SEED.tasks.slice(); state.deadlines = SEED.deadlines.slice(); $('local-note').hidden = false; render(); }
+  var claude = window.claude;
+  if (!claude || !claude.use) { startLocal(); return; }
+  claude.use('db').then(function (d) {
+    if (!d) { startLocal(); return; }
+    db = d;
+    function err() { toast('Lost the connection to saved data. Reload to retry.'); }
+    db.collection('tasks').onSnapshot(function (s) { state.tasks = snapList(s); render(); }, err);
+    db.collection('deadlines').onSnapshot(function (s) { state.deadlines = snapList(s); render(); }, err);
+    db.doc('reviews/' + WEEK0).onSnapshot(function (s) { state.review = s.exists ? s.data() : {}; render(); }, err);
+  }, startLocal);
+})();
+</script>
