@@ -1,0 +1,451 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Biomic Health</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root {
+  --bg: #050a1c;
+  --side: #07102a;
+  --surface: #0b1536;
+  --surface-2: #101c4a;
+  --line: #1a2757;
+  --fg: #f1f4ff;
+  --muted: #8d99c4;
+  --accent: #7d9bff;
+  --btn: #3f68d8;
+  --btn-2: #5a82ee;
+  --warn: #f5a54a;
+  --k-prize: #ef7fa6;
+  --k-grant: #f5a54a;
+  --k-event: #6f93f5;
+  --k-fellowship: #b08cf5;
+  --font: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: radial-gradient(1200px 500px at 60% -10%, #0e1b4d 0%, var(--bg) 60%); background-color: var(--bg); color: var(--fg); font: 400 14px/1.5 var(--font); min-height: 100vh; }
+button { font: inherit; color: inherit; cursor: pointer; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+svg.i { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+
+.app { display: grid; grid-template-columns: 246px minmax(0, 1fr); min-height: 100vh; }
+
+/* sidebar */
+aside { background: linear-gradient(180deg, #081230, var(--side)); border-right: 1px solid var(--line); padding: 16px 12px; display: flex; flex-direction: column; gap: 14px; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+.brand { display: flex; align-items: center; gap: 10px; padding: 0 4px; font-weight: 600; font-size: 15px; letter-spacing: -.02em; }
+.logo { width: 30px; height: 30px; border-radius: 8px; background: linear-gradient(135deg, #5b86f5, #2d4fc4); display: grid; place-items: center; font-weight: 700; }
+.beta { font: 500 9px var(--mono); letter-spacing: .1em; color: var(--warn); border: 1px solid #6b4a1e; background: #2a1d0c; padding: 1px 6px; border-radius: 4px; }
+.profile { display: flex; gap: 12px; align-items: center; padding: 12px; border: 1px solid var(--line); border-radius: 14px; background: linear-gradient(180deg, var(--surface-2), var(--surface)); }
+.profile b { font-size: 14px; letter-spacing: -.02em; }
+.profile .mono { display: block; margin-top: 2px; }
+.mono { font: 400 10px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.mini-bar { height: 3px; background: #1a2757; border-radius: 3px; margin: 5px 0 3px; overflow: hidden; }
+.mini-bar i { display: block; height: 100%; width: 4%; background: var(--accent); }
+.search { display: flex; align-items: center; gap: 8px; padding: 9px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--muted); width: 100%; text-align: left; }
+.search span { flex: 1; }
+.kbd { font: 400 10px var(--mono); border: 1px solid var(--line); border-radius: 4px; padding: 1px 6px; }
+nav { display: flex; flex-direction: column; gap: 2px; }
+nav > a.top { display: flex; align-items: center; gap: 12px; padding: 8px 10px; border-radius: 8px; color: var(--fg); font-weight: 600; font-size: 14px; }
+nav > a.top svg { color: var(--muted); }
+nav > a.top:hover { background: #0e1a42; text-decoration: none; }
+.sub-nav { margin: 4px 0 6px 18px; padding-left: 0; border-left: 1px solid var(--line); display: flex; flex-direction: column; gap: 2px; }
+.sub-nav a { padding: 6px 12px; margin-left: 10px; border-radius: 8px; color: var(--muted); font-size: 13px; position: relative; }
+.sub-nav a:hover { color: var(--fg); text-decoration: none; }
+.sub-nav a.on { color: var(--fg); background: #101e4d; border: 1px solid #22346e; }
+.sub-nav a.on::before { content: ""; position: absolute; left: -11px; top: 5px; bottom: 5px; width: 2px; background: var(--accent); border-radius: 2px; }
+.spacer { flex: 1; min-height: 16px; }
+.editors { display: flex; gap: 10px; align-items: center; padding: 10px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+.editors b { display: block; font-size: 13px; }
+.editors small { color: var(--muted); font-size: 12px; }
+.pair { display: flex; }
+.pair span { width: 24px; height: 24px; border-radius: 50%; border: 1.5px solid #2b3d82; background: #cfd6ee; display: block; margin-right: -6px; overflow: hidden; }
+.foot-nav { display: flex; flex-direction: column; gap: 2px; }
+.foot-nav a { display: flex; align-items: center; gap: 12px; padding: 7px 10px; color: var(--muted); font-size: 13px; border-radius: 8px; }
+.foot-nav a:hover { color: var(--fg); text-decoration: none; background: #0e1a42; }
+.settings-row { display: flex; align-items: center; justify-content: space-between; padding-left: 10px; color: var(--muted); font-size: 13px; }
+.settings-row span { display: flex; gap: 12px; align-items: center; }
+.icon-btn { width: 34px; height: 34px; border: 1px solid var(--line); background: var(--surface); border-radius: 8px; display: grid; place-items: center; color: var(--muted); }
+
+/* main */
+main { padding: 26px 40px 48px; min-width: 0; }
+.page { max-width: 920px; margin: 0 auto; }
+.page.wide { max-width: 1000px; }
+.eyebrow { font: 400 11px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); display: flex; gap: 8px; align-items: center; }
+h1 { font-size: clamp(32px, 5vw, 42px); line-height: 1.05; letter-spacing: -.04em; font-weight: 600; margin: 4px 0 8px; }
+.lede { color: #b4bfe4; font-size: 15px; margin: 0; max-width: 62ch; }
+.links { display: flex; gap: 22px; margin: 14px 0 22px; font-size: 13px; flex-wrap: wrap; }
+.links a { display: flex; gap: 6px; align-items: center; color: #9fb4ff; }
+.card { border: 1px solid var(--line); border-radius: 14px; background: linear-gradient(180deg, var(--surface-2), var(--surface)); padding: 18px 22px; }
+.card.hero { background: linear-gradient(180deg, #1a2b6c, #0f1b4a); border-color: #2c4190; }
+.card-head { display: flex; justify-content: space-between; align-items: baseline; }
+.dot { width: 7px; height: 7px; border-radius: 50%; background: #5a6aa5; display: inline-block; }
+.dot.g { background: #54d8ab; }
+
+/* path */
+.stepper { display: grid; grid-template-columns: repeat(6, 1fr); margin: 20px 0 14px; position: relative; }
+.stepper div { display: flex; flex-direction: column; align-items: center; gap: 8px; position: relative; }
+.stepper div::before { content: ""; position: absolute; top: 12px; left: 50%; width: 100%; height: 2px; background: #243567; }
+.stepper div:first-child::before { background: linear-gradient(90deg, #6fa2e8 0 40%, #243567 40%); }
+.stepper div:last-child::before { display: none; }
+.stepper i { width: 24px; height: 24px; border-radius: 50%; border: 2px solid #2a3b78; background: #0a1232; z-index: 1; display: grid; place-items: center; }
+.stepper .now i { border-color: #cfdcff; box-shadow: 0 0 0 3px #2c4398; }
+.stepper .now i::after { content: ""; width: 8px; height: 8px; border-radius: 50%; background: #fff; }
+.stepper small { font: 400 10px var(--mono); letter-spacing: .12em; color: var(--muted); }
+.stepper .now small { color: var(--fg); font-weight: 500; }
+.meter { height: 6px; background: #1a2757; border-radius: 6px; margin: 16px 0 14px; overflow: hidden; }
+.meter i { display: block; height: 100%; background: linear-gradient(90deg, #5d82ee, #8fa8ff); }
+.big { font-size: 22px; font-weight: 700; letter-spacing: -.02em; }
+.next { font-weight: 600; font-size: 13px; color: #9fb4ff; display: inline-flex; gap: 6px; align-items: center; }
+.steps { display: flex; flex-direction: column; gap: 10px; margin: 10px 0 26px; }
+.step { display: flex; gap: 14px; align-items: center; padding: 14px 18px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); width: 100%; text-align: left; }
+.step:hover { border-color: #2f4390; }
+.step .n { width: 26px; height: 26px; border-radius: 50%; border: 1px solid #34478c; display: grid; place-items: center; font-size: 11px; color: var(--muted); flex: none; }
+.step .t { flex: 1; }
+.step b { display: block; font-size: 14.5px; color: var(--fg); }
+.step span { color: var(--muted); font-size: 13px; }
+.step svg { color: var(--muted); }
+.milestones { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+.ms { display: flex; gap: 12px; align-items: center; }
+.ms .n { width: 26px; height: 26px; border-radius: 50%; border: 1px solid #34478c; display: grid; place-items: center; font-size: 11px; flex: none; }
+.ms.now .n { border-color: #cfdcff; box-shadow: 0 0 0 3px #2c4398; }
+.pill { font: 400 10px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--accent); border: 1px solid #2b4190; background: #101e55; border-radius: 6px; padding: 2px 8px; }
+.ms-list { margin: 6px 0 12px 38px; display: flex; flex-direction: column; gap: 6px; color: var(--muted); font-size: 13px; }
+.ms-list label { display: flex; gap: 8px; align-items: center; }
+
+/* community */
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
+.grid2 .col { display: flex; flex-direction: column; gap: 14px; }
+.panel-t { display: flex; justify-content: space-between; align-items: center; font: 500 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; padding-bottom: 8px; border-bottom: 1px solid var(--line); margin-bottom: 10px; }
+.panel-t span { display: flex; gap: 8px; align-items: center; }
+.panel-t em { font-style: normal; color: var(--muted); font-family: var(--font); letter-spacing: 0; text-transform: none; font-size: 13px; }
+.card.s { padding: 12px 16px; border-radius: 12px; background: var(--surface); }
+.muted { color: #aab5dc; margin: 0; font-size: 13.5px; }
+.cta-row { display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+.cta-row h2 { font-size: 24px; letter-spacing: -.03em; line-height: 1.1; margin: 6px 0 12px; max-width: 18ch; }
+.btn { background: linear-gradient(180deg, var(--btn-2), var(--btn)); border: 1px solid #6f93f5; color: #fff; font-weight: 600; padding: 10px 18px; border-radius: 9px; }
+.btn:hover { filter: brightness(1.1); }
+.btn.ghost { background: var(--surface); border-color: var(--line); font-weight: 500; }
+.dashed { border: 1px dashed #26366f; border-radius: 10px; text-align: center; padding: 16px; color: #aab5dc; margin-top: 10px; }
+.legal { font-size: 13px; color: #aab5dc; margin: 20px 0 0; }
+.footer { border-top: 1px solid var(--line); margin-top: 40px; padding-top: 22px; font-size: 13px; color: #aab5dc; display: flex; flex-direction: column; gap: 6px; }
+.footer a { color: #8fa8ff; }
+
+/* academy */
+.academy-head { display: flex; justify-content: space-between; gap: 20px; align-items: flex-start; }
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid var(--line); border-radius: 12px; background: linear-gradient(180deg, var(--surface-2), var(--surface)); padding: 10px 6px; flex: none; }
+.stats div { padding: 4px 16px; border-left: 1px solid var(--line); }
+.stats div:first-child { border: 0; }
+.stats b { font-size: 22px; display: block; line-height: 1.1; }
+.stats b small { font-size: 12px; color: var(--muted); font-weight: 400; }
+.banner { display: flex; align-items: center; gap: 12px; padding: 12px 16px; margin: 20px 0 16px; }
+.banner p { flex: 1; margin: 0; font-weight: 500; }
+.two { display: grid; grid-template-columns: 1.55fr 1fr; gap: 14px; }
+.card.accent { border-left: 3px solid var(--accent); }
+.card h2 { font-size: 28px; letter-spacing: -.03em; margin: 8px 0 10px; font-weight: 600; }
+.tag { font: 500 10px var(--mono); border: 1px solid var(--line); background: #0a1334; border-radius: 4px; padding: 2px 6px; margin-right: 6px; }
+.section-h { display: flex; justify-content: space-between; align-items: baseline; margin: 24px 0 4px; }
+.section-h h3 { font-size: 22px; letter-spacing: -.03em; margin: 0; }
+.rule { border-bottom: 1px solid var(--line); margin-bottom: 14px; padding-bottom: 12px; }
+.courses { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.course { border: 1px solid var(--line); border-radius: 12px; background: var(--surface); overflow: hidden; display: flex; flex-direction: column; }
+.course .body { padding: 14px 16px; display: flex; gap: 12px; flex: 1; }
+.ring { width: 38px; height: 38px; border-radius: 50%; border: 2px solid #2a3b8c; display: grid; place-items: center; font: 500 11px var(--mono); flex: none; }
+.course .k { font: 400 10px var(--mono); letter-spacing: .12em; color: var(--muted); text-transform: uppercase; }
+.course b { display: block; font-size: 15px; line-height: 1.25; margin: 2px 0 6px; }
+.course p { margin: 0; color: var(--muted); font-size: 13px; }
+.course .meta { display: flex; justify-content: space-between; padding: 10px 16px; border-top: 1px solid var(--line); font: 400 11px var(--mono); color: #aab5dc; background: #091130; }
+.course .meta span:last-child { color: var(--muted); letter-spacing: .1em; font-size: 10px; }
+
+/* opportunities */
+.opp-head { display: flex; justify-content: space-between; align-items: flex-start; }
+.tabs { margin: 20px 0 12px; border-bottom: 1px solid var(--line); padding-bottom: 8px; position: relative; }
+.tabs span { font: 500 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; border-bottom: 2px solid var(--warn); padding-bottom: 8px; }
+.chart { padding: 14px 16px 12px; }
+.chart-row { display: grid; grid-template-columns: 310px 1fr; align-items: center; height: 25.7px; }
+.chart-row .t { font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; justify-content: space-between; padding-right: 10px; gap: 8px; }
+.chart-row .t span { overflow: hidden; text-overflow: ellipsis; }
+.bm { width: 20px; height: 20px; border: 1px solid #2a3b78; background: #0a1232; border-radius: 5px; display: grid; place-items: center; color: var(--muted); flex: none; padding: 0; }
+.bm.on { border-color: #54d8ab; color: #54d8ab; background: #0c2a2a; }
+.track { position: relative; height: 100%; }
+.bar { position: absolute; top: 50%; height: 6px; transform: translateY(-50%); border-radius: 6px; }
+.bar.pt::after { content: ""; position: absolute; right: -4px; top: -3px; width: 12px; height: 12px; border-radius: 50%; background: inherit; }
+.lab { position: absolute; top: 50%; transform: translateY(-50%); font: 400 10px var(--mono); color: var(--muted); margin-left: 12px; }
+.axis { display: grid; grid-template-columns: 310px 1fr; margin-bottom: 6px; font: 400 10px var(--mono); letter-spacing: .1em; color: var(--muted); text-transform: uppercase; }
+.axis div { position: relative; height: 14px; }
+.axis span { position: absolute; transform: translateX(-50%); white-space: nowrap; }
+.axis span.today { color: var(--fg); }
+.grid-lines { position: absolute; inset: 0; pointer-events: none; }
+.grid-lines i { position: absolute; top: 0; bottom: 0; width: 1px; background: #15204a; }
+.grid-lines i.today { background: #3c5bb8; }
+.rows { position: relative; }
+.legend { display: flex; gap: 18px; font: 400 10px var(--mono); letter-spacing: .1em; color: var(--muted); margin-top: 10px; padding-left: 4px; }
+.legend i { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 6px; }
+.opp { display: flex; gap: 16px; align-items: flex-start; padding: 14px 18px; margin-top: 12px; }
+.date { width: 54px; height: 54px; border: 1px solid #2b3d82; background: #1a2a63; border-radius: 10px; text-align: center; font: 400 10px var(--mono); letter-spacing: .1em; padding-top: 7px; color: var(--muted); flex: none; }
+.date b { display: block; font: 600 22px var(--font); letter-spacing: -.02em; color: var(--fg); line-height: 1.1; }
+.opp .info { flex: 1; min-width: 0; }
+.opp .kind { font: 500 10px var(--mono); letter-spacing: .1em; text-transform: uppercase; }
+.opp .kind span { color: var(--muted); font-family: var(--font); text-transform: none; letter-spacing: 0; font-size: 12px; margin-left: 4px; }
+.opp h4 { margin: 2px 0 2px; font-size: 14px; }
+.opp small { color: var(--muted); font-size: 12px; }
+.opp p { margin: 8px 0 0; color: #b0bbe0; font-size: 13.5px; }
+.opp .acts { display: flex; gap: 8px; }
+.sm-btn { border: 1px solid var(--line); background: var(--surface); border-radius: 7px; padding: 5px 12px; font-size: 12.5px; font-weight: 600; display: flex; gap: 6px; align-items: center; }
+.sm-btn.on { border-color: #54d8ab; color: #54d8ab; }
+.sm-btn.sq { padding: 5px 9px; }
+.outline { border: 1px solid var(--line); border-radius: 10px; background: var(--surface); padding: 8px 14px; font-weight: 600; font-size: 13px; }
+
+.menu-btn { display: none; }
+@media (max-width: 900px) {
+  .app { grid-template-columns: 1fr; }
+  aside { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--line); }
+  main { padding: 20px 16px 40px; }
+  .grid2, .two, .courses { grid-template-columns: 1fr; }
+  .academy-head, .opp-head { flex-direction: column; }
+  .stats { width: 100%; }
+  .chart { overflow-x: auto; }
+  .chart-inner { min-width: 720px; }
+  .stepper small { font-size: 8px; letter-spacing: .04em; }
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside>
+    <div class="brand"><div class="logo">B</div>Biomic Health <span class="beta">BETA</span></div>
+    <a class="profile" href="#/path" style="color:inherit;text-decoration:none">
+      <svg width="52" height="52" viewBox="0 0 52 52" aria-hidden="true">
+        <circle cx="26" cy="26" r="25" fill="#3b4f8c" stroke="#e2e8ff" stroke-width="1.5"/>
+        <path d="M13 28c-2-13 8-17 14-17s14 4 12 17c-1 9-7 14-13 14s-12-5-13-14z" fill="#f0b98a"/>
+        <path d="M12 26c0-12 9-16 15-16s13 4 13 16c-3-6-6-8-14-8s-11 2-14 8z" fill="#4a2f1a"/>
+        <circle cx="21" cy="29" r="1.6" fill="#2b1a10"/><circle cx="32" cy="29" r="1.6" fill="#2b1a10"/>
+        <path d="M22 36c2 2 7 2 9 0" stroke="#8a4b2a" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+        <path d="M9 52c2-8 8-9 17-9s15 1 17 9z" fill="#2b5fd0"/>
+      </svg>
+      <div style="flex:1"><b>Your profile</b><span class="mono">Associate · Week 01</span><div class="mini-bar"><i></i></div><span class="mono" style="font-size:9px">4% → Member</span></div>
+    </a>
+    <button class="search"><svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span>Search</span><i class="kbd">Ctrl K</i></button>
+    <nav id="nav"></nav>
+    <div class="spacer"></div>
+    <a class="editors" href="#/path" style="color:inherit;text-decoration:none">
+      <div class="pair"><span></span><span></span></div>
+      <div><b>About the editors</b><small>Two NHS doctors</small></div>
+    </a>
+    <div class="foot-nav">
+      <a href="#/path"><svg class="i" viewBox="0 0 24 24"><path d="M4 8h16v11H4zM9 8V5h6v3"/></svg>Editor desk</a>
+      <a href="#/path"><svg class="i" viewBox="0 0 24 24"><path d="M5 20V10M12 20V4M19 20v-7"/></svg>Analytics</a>
+      <a href="#/path"><svg class="i" viewBox="0 0 24 24"><path d="M16 6c-1-1.5-2.500-2-4-2-2.500 0-4 1.500-4 4v4H6m2 0h7m-7 0v6c0 1-1 2-2 2h11"/></svg>Revenue</a>
+    </div>
+    <div class="settings-row"><span><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1.200l2-1.500-2-3.400-2.300 1a7 7 0 0 0-2-1.200L14 3h-4l-.6 2.700a7 7 0 0 0-2 1.200l-2.300-1-2 3.400 2 1.500a7 7 0 0 0 0 2.400l-2 1.500 2 3.400 2.300-1a7 7 0 0 0 2 1.200L10 21h4l.6-2.700a7 7 0 0 0 2-1.200l2.300 1 2-3.400-2-1.500c.1-.4.100-.8.100-1.200z"/></svg>Settings</span><button class="icon-btn" aria-label="Sign out"><svg class="i" viewBox="0 0 24 24"><path d="M10 4H5v16h5M15 8l-4 4 4 4M11 12h9"/></svg></button></div>
+  </aside>
+  <main id="main"></main>
+</div>
+
+<script>
+const ICONS = {
+  today: '<path d="M3 12h4l3-8 4 16 3-8h4"/>',
+  opp: '<path d="M4 8h16v11H4zM9 8V5h6v3"/>',
+  learn: '<path d="M3 10 12 4l9 6M5 10v8M9.500 10v8M14.500 10v8M19 10v8M3 20h18"/>',
+  network: '<circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.500 3-5.500 6-5.500s6 2 6 5.500M16 5.500a3 3 0 0 1 0 5.500M18 15c2 .8 3 2.500 3 5"/>',
+  career: '<path d="m3 17 6-6 4 4 8-8M15 7h6v6"/>',
+  arrow: '<path d="M5 12h14M13 6l6 6-6 6"/>',
+  edit: '<path d="M4 20h4L19 9l-4-4L4 16zM13 7l4 4"/>',
+  path: '<circle cx="6" cy="6" r="2"/><circle cx="18" cy="18" r="2"/><path d="M8 6h6a3 3 0 0 1 0 6H10a3 3 0 0 0 0 6h6"/>',
+  user: '<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>',
+  bm: '<path d="M7 4h10v16l-5-4-5 4z"/>',
+  cal: '<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/>',
+  x: '<path d="M6 6l12 12M18 6 6 18"/>'
+};
+const ic = (n, s) => `<svg class="i" viewBox="0 0 24 24" ${s ? `style="width:${s}px;height:${s}px"` : ''}>${ICONS[n]}</svg>`;
+
+const NAV = [
+  { id: 'today', label: 'Today', icon: 'today', route: '#/today' },
+  { id: 'opportunities', label: 'Opportunities', icon: 'opp', route: '#/opportunities', subs: [['All', 'opportunities'], ['Jobs', 'jobs'], ['Fellowships & grants', 'grants'], ['Events', 'events'], ['My calendar', 'calendar'], ['For employers', 'employers']] },
+  { id: 'learn', label: 'Learn', icon: 'learn', route: '#/learn', subs: [['Academy', 'learn'], ['Review', 'review'], ['Certificates', 'certs'], ['Industry', 'industry'], ['Pro', 'pro'], ['For organisations', 'orgs']] },
+  { id: 'network', label: 'Network', icon: 'network', route: '#/network', subs: [['Community', 'network'], ['People', 'people'], ['Advisers', 'advisers'], ['Messages', 'messages']] },
+  { id: 'career', label: 'Career', icon: 'career', route: '#/path', subs: [['My path', 'path'], ['Weekly review', 'weekly'], ['Goals', 'goals'], ['Tracker', 'tracker'], ['Careers', 'careers'], ['Portfolio', 'portfolio'], ['Visibility', 'visibility']] }
+];
+
+// which section + sub-page each hash belongs to
+const ROUTES = { path: 'career', network: 'network', learn: 'learn', opportunities: 'opportunities' };
+const SECTION_OF = k => ({ jobs: 'opportunities', grants: 'opportunities', events: 'opportunities', calendar: 'opportunities', employers: 'opportunities', review: 'learn', certs: 'learn', industry: 'learn', pro: 'learn', orgs: 'learn', people: 'network', advisers: 'network', messages: 'network', weekly: 'career', goals: 'career', tracker: 'career', careers: 'career', portfolio: 'career', visibility: 'career', today: 'today' }[k] || ROUTES[k]);
+
+function renderNav(key) {
+  const sec = SECTION_OF(key);
+  document.getElementById('nav').innerHTML = NAV.map(n => {
+    const open = n.id === sec && n.subs;
+    return `<a class="top" href="${n.route}">${ic(n.icon, 16)}${n.label}</a>` +
+      (open ? `<div class="sub-nav">${n.subs.map(([l, k]) => `<a class="${k === key ? 'on' : ''}" href="#/${k}">${l}</a>`).join('')}</div>` : '');
+  }).join('');
+}
+
+/* ---------- pages ---------- */
+function pathPage() {
+  const steps = [
+    ['Complete your profile', 'People decide in seconds whether to read on. It moves you towards a clinical AI role or fellowship.'],
+    ['Finish your first Academy lesson', 'A small start that sets the order of everything after it. It moves you towards a clinical AI role or fellowship.'],
+    ['Complete C1: Orientation to clinical AI', 'The shared language everyone on this path is expected to have. It moves you towards a clinical AI role or fellowship.']
+  ];
+  const stages = [['Join', ['Tell us where you are and where you want to go', 'Set up your member profile']], ['Learn', ['Finish your first Academy lesson', 'Complete C1: Orientation to clinical AI', 'Pass the placement check']], ['Prove', ['Earn your first certificate', 'Log a project in your portfolio']], ['Get seen', ['Make your profile visible to recruiters', 'Attend an event or webinar']], ['Outcome', ['Apply to a fellowship or role']], ['Give back', ['Mentor a newer member']]];
+  return `<div class="page">
+    <div class="eyebrow">${ic('path')} YOUR PATH</div>
+    <h1>Move into clinical AI</h1>
+    <p class="lede">You're an ST2 radiology resident doctor aiming for a clinical AI fellowship.</p>
+    <div class="links"><a href="#/path">${ic('edit', 13)}Edit this</a><a href="#/path">${ic('path', 13)}Change paths</a><a href="#/path">${ic('user', 13)}Change who you are</a></div>
+
+    <div class="card hero">
+      <div class="card-head"><span class="mono">Where you are</span><span class="mono">2 of 17 milestones</span></div>
+      <div class="stepper">${['Join', 'Learn', 'Prove', 'Get seen', 'Outcome', 'Give back'].map((s, i) => `<div class="${i ? '' : 'now'}"><i></i><small>${s.toUpperCase()}</small></div>`).join('')}</div>
+      <div><b>Join.</b> <span style="color:#c6d0f2">Tell us where you are and where you want to go.</span></div>
+    </div>
+
+    <div class="card" style="margin-top:14px">
+      <div class="card-head"><span class="mono">Profile strength</span><span><span class="big">15%</span> <span class="muted" style="display:inline">ready for recruiters</span></span></div>
+      <div class="meter"><i style="width:15%"></i></div>
+      <a class="next" href="#/learn">Earn your first certificate to reach 35% ${ic('arrow', 13)}</a>
+    </div>
+
+    <div class="mono" style="margin:26px 0 10px">Your next 3 steps</div>
+    <div class="steps">${steps.map((s, i) => `<button class="step"><span class="n">${i + 1}</span><span class="t"><b>${s[0]}</b><span>${s[1]}</span></span>${ic('arrow')}</button>`).join('')}</div>
+
+    <div class="mono">The whole path</div>
+    <p class="muted" style="margin:6px 0 8px">Tap a milestone to see how to complete it. Evidence counts once on every path it fits.</p>
+    <div class="milestones">${stages.map(([n, items], i) => `<details ${i === 0 ? 'open' : ''}><summary class="ms ${i === 0 ? 'now' : ''}" style="cursor:pointer;list-style:none"><span class="n">${i + 1}</span><b style="font-size:16px">${n}</b><span class="mono">${i === 0 ? 1 : 0}/${items.length}</span>${i === 0 ? '<span class="pill">You are here</span>' : ''}</summary><div class="ms-list">${items.map((t, j) => `<label><input type="checkbox" ${i === 0 && j === 0 ? 'checked' : ''}> ${t}</label>`).join('')}</div></details>`).join('')}</div>
+  </div>`;
+}
+
+function networkPage() {
+  return `<div class="page wide">
+    <div class="mono">The network</div>
+    <h1 style="margin-top:2px">Community</h1>
+    <p class="lede" style="max-width:56ch;font-size:14px">Connect with clinicians working towards the same goals. Members only, moderated, and no public feed.</p>
+    <div class="card hero cta-row" style="margin-top:22px;padding:22px 26px;background:linear-gradient(180deg,#18286a,#101d52)">
+      <div><div class="mono" style="color:var(--warn)">Member profile</div><h2>Set up a profile to connect, message and join accountability circles.</h2><p class="muted">Your profile stays hidden until you choose to show it to members. Your email is never shown.</p></div>
+      <button class="btn" style="padding:13px 22px">Set up my profile</button>
+    </div>
+    <div class="grid2">
+      <div class="col">
+        <div class="card s"><div class="panel-t"><span><i class="dot"></i>Messages</span><a href="#/messages" style="font-size:13px;font-family:var(--font);text-transform:none;letter-spacing:0">All messages</a></div><p class="muted">No conversations yet. You can message anyone you're connected with.</p></div>
+        <div class="card s"><div class="panel-t"><span><i class="dot"></i>Circles</span></div><p class="muted">Small accountability groups of up to 6. Post a weekly check-in and link your cycle report.</p><div class="dashed">Set up your profile to start a circle.</div></div>
+      </div>
+      <div class="col">
+        <div class="card s"><div class="panel-t"><span><i class="dot"></i>Requests</span><em>0 sent</em></div><p class="muted">No pending requests.</p></div>
+        <div class="card s"><div class="panel-t"><span><i class="dot"></i>Connections · 0</span></div><p class="muted">Find people in the directory and send a request.</p></div>
+        <div class="card hero" style="padding:16px 18px"><div class="mono">Directory</div><h3 style="margin:6px 0 8px;font-size:19px;letter-spacing:-.03em;line-height:1.2">Find members by specialty, goal and what they are open to</h3><a href="#/people" style="font-weight:500">Browse the directory →</a></div>
+      </div>
+    </div>
+    <p class="legal">Never share patient-identifiable information. Read the <a href="#/network">community guidelines</a>, and report anything that breaks them.</p>
+    ${footer()}
+  </div>`;
+}
+
+function footer() {
+  return `<div class="footer"><div>For healthcare professionals. Not clinical advice. Every item links to its source; please check the original before acting on it.</div>
+  <div>Signed in as you@example.com · <a href="#/path">Email settings</a> · <a href="#/path">Sign out</a></div>
+  <div>© 2026 Biomic Innovation Ltd · <a href="#/path">Suggest something</a> · <a href="#/path">Editors and declarations</a> · <a href="#/path">Pro</a> · <a href="#/path">Privacy</a> · <a href="#/path">Terms</a> · <a href="#/path">Contact</a></div></div>`;
+}
+
+function learnPage() {
+  const courses = [
+    ['C1', 'Literacy', 'Orientation: What Clinical AI Is (and Isn\'t)', 'A grounded orientation to clinical AI: the main types, where they sit in NHS...', 5, 41],
+    ['C2', 'Literacy', 'How Machine Learning Works (Conceptual)', 'A maths-free guide to how machine learning works: the main paradigms, the...', 4, 33],
+    ['C3', 'Literacy', 'Foundation Models & Generative AI in Medicine', 'How transformers, LLMs and multimodal foundation models work, where they are...', 6, 51],
+    ['C4', 'Evidence', 'Evaluating Clinical AI: Evidence & Metrics', 'The metrics and study designs needed to judge whether a clinical AI works:...', 5, 45],
+    ['C5', 'Leadership', 'The Clinician & the Algorithm: Human Factors', 'How clinicians and AI work together in practice: reliance and automation bias,...', 4, 33],
+    ['C6', 'Safety', 'Implementing AI Safely in a Health System', 'How AI gets into NHS services safely: the adoption pathway, clinical safety cases, t...', 5, 46]
+  ];
+  return `<div class="page wide" style="max-width:1100px">
+    <div class="academy-head"><div><div class="mono">The institute · Academy</div><h1 style="margin-top:2px">Academy</h1>
+      <p class="lede" style="font-size:14px;max-width:62ch">Short, sourced lessons on clinical AI for UK clinicians. Each ends with a four-question check, and what you learn goes into your review deck.</p></div>
+      <div class="stats"><div><span class="mono">Lessons</span><b>0<small>/76</small></b></div><div><span class="mono">Due</span><b>0</b></div><div><span class="mono">Streak</span><b>0<small>d</small></b></div><div><span class="mono">Certs</span><b>0</b></div></div></div>
+    <div class="card banner" id="banner"><i class="dot" style="background:#6f93f5"></i><p>Modules are ordered for your path, and anything the placement check showed you know is marked to skip.</p><button class="btn" style="padding:9px 14px">Start the first lesson</button><button class="icon-btn" onclick="document.getElementById('banner').remove()" aria-label="Dismiss">${ic('x')}</button></div>
+    <div class="two">
+      <div class="card accent"><div class="mono"><i class="dot g"></i> &nbsp;Continue where you left off</div><h2>Deployment Infrastructures</h2><div style="color:#b4bfe4"><span class="tag">A8</span> Production MLOps (in depth) · Lesson 1 of 3 · 11 min</div><button class="btn" style="margin-top:16px">Continue lesson →</button></div>
+      <div class="card"><div class="mono"><i class="dot"></i> &nbsp;Review deck</div><div style="margin:10px 0 4px"><span style="font-size:40px;font-weight:600">0</span> <span class="muted" style="display:inline">cards due</span></div><p class="muted">Finish a lesson to add its cards to your deck.</p><div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px"><button class="btn ghost">Open deck</button><a href="#/certs">Certificates</a></div></div>
+    </div>
+    <div class="section-h"><h3>Core</h3><span class="mono">0/29 lessons</span></div>
+    <div class="rule muted">What clinical AI is, how it works, how to judge the evidence and how to use it safely. Start here.</div>
+    <div class="courses">${courses.map(c => `<div class="course"><div class="body"><div class="ring">0</div><div><div class="k">${c[0]} · ${c[1]}</div><b>${c[2]}</b><p>${c[3]}</p></div></div><div class="meta"><span>${c[4]} lessons · ${c[5]} min ·</span><span>NOT STARTED</span></div></div>`).join('')}</div>
+  </div>`;
+}
+
+/* opportunities: dates are offsets from today so the chart is always "next 60 days" */
+const OPPS = [
+  { d: 21, k: 'prize', org: 'Radiological Society of North America (RSNA)', t: 'RSNA Knee Abnormality Detection AI Challenge 2026', where: 'Global · Online (Kaggle)', desc: 'Kaggle challenge to detect and classify knee MRI abnormalities using images and multilingual radiology reports from 16 sites. Open to all researchers; $77,000 total prize money.', span: 21 },
+  { d: 29, k: 'grant', org: 'Rainwater Charitable Foundation (Tau Consortium)', t: 'Rainwater Tau Consortium Learning Research Network: AI-enabled tauopathy research funding', where: 'Global', desc: 'Open call funding primary tauopathy research in which AI is integral, with up to $250,000 per team and $1m per project across up to four teams. Letters of intent close 30 October 2026; applicants worldwide are eligible.', span: 29 },
+  { d: 33, k: 'event', org: 'Economist Impact', t: 'AI in Health Summit 2026', where: 'London', desc: 'A one-day summit on how AI is changing health systems, with clinicians, regulators and industry.', span: 0 },
+  { d: 40, k: 'event', org: 'AIMed', t: 'AIMed26', where: 'Orlando, USA', desc: 'Annual AI in medicine conference with clinical tracks.', span: 0 },
+  { d: 41, k: 'fellowship', org: 'Crick Institute', t: 'Crick AI/ML Clinical Fellowships 2027', where: 'London', desc: 'Clinical fellowships combining AI/ML research with clinical training.', span: 41 },
+  { d: 41, k: 'grant', org: 'Frontier AI', t: 'Frontier AI: SME Champions, Phase 1', where: 'UK', desc: 'Phase 1 funding for SMEs adopting frontier AI.', span: 41, kept: true },
+  { d: 41, k: 'event', org: 'British Institute of Radiology', t: 'BIR Annual Congress 2026', where: 'London', desc: 'Annual radiology congress.', span: 0 },
+  { d: 44, k: 'event', org: 'HLTH', t: 'HLTH USA 2026', where: 'Las Vegas, USA', desc: 'Health innovation conference.', span: 0 },
+  { d: 46, k: 'fellowship', org: 'NHS England', t: 'NHS Fellowship in Clinical AI – Cohort 6', where: 'UK', desc: 'NHS clinical AI fellowship programme.', span: 46 },
+  { d: 58, k: 'event', org: 'RSNA', t: 'RSNA 2026 Annual Meeting', where: 'Chicago, USA', desc: 'Annual meeting of the Radiological Society of North America.', span: 0 }
+];
+const KIND_COLOR = { prize: 'var(--k-prize)', grant: 'var(--k-grant)', event: 'var(--k-event)', fellowship: 'var(--k-fellowship)' };
+const kept = new Set(OPPS.filter(o => o.kept).map(o => o.t));
+const fmt = (dt, o) => dt.toLocaleDateString('en-GB', o);
+const at = n => { const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() + n); return d; };
+
+function oppsPage() {
+  const W = 60;
+  const ticks = [[0, 'Today'], [15, null], [30, null], [45, null], [60, null]].map(([n, l]) => [n, l || fmt(at(n), { day: '2-digit', month: 'short' }).toUpperCase()]);
+  // ticks every 14 days like the original
+  const t2 = [0, 14, 28, 42, 56].map(n => [n, n ? fmt(at(n), { day: '2-digit', month: 'short' }).toUpperCase() : 'Today']);
+  const rows = OPPS.map((o, i) => {
+    const c = KIND_COLOR[o.k];
+    const left = o.span ? 0 : Math.max(0, o.d - 2) / W * 100;
+    const width = o.span ? o.d / W * 100 : 3 / W * 100 * 1.3;
+    return `<div class="chart-row"><div class="t"><span>${o.t}</span><button class="bm ${kept.has(o.t) ? 'on' : ''}" data-i="${i}" aria-label="Keep">${ic('bm', 11)}</button></div>
+      <div class="track"><div class="bar ${o.span ? 'pt' : ''}" style="left:${left}%;width:${width}%;background:${o.span ? `linear-gradient(90deg, transparent, ${c})` : c}"></div><span class="lab" style="left:${o.span ? width : left + width}%">${o.d}d</span></div></div>`;
+  }).join('');
+  return `<div class="page wide" style="max-width:960px">
+    <div class="opp-head"><div><h1 style="margin-top:0">Opportunities</h1><p class="lede" style="font-size:14px;max-width:70ch">Fellowships, grants, prizes and events, soonest first. Keep anything to track it; add dates to your calendar.</p></div><button class="outline">Share an opportunity</button></div>
+    <div class="tabs"><span>Next 60 days</span></div>
+    <div class="card chart"><div class="chart-inner">
+      <div class="axis"><div></div><div>${t2.map(([n, l]) => `<span class="${n ? '' : 'today'}" style="left:${n / W * 100}%">${l}</span>`).join('')}</div></div>
+      <div class="rows"><div style="position:absolute;left:310px;right:0;top:0;bottom:0" class="grid-lines">${t2.map(([n]) => `<i class="${n ? '' : 'today'}" style="left:${n / W * 100}%"></i>`).join('')}</div>${rows}</div>
+      <div class="legend"><span><i style="background:var(--k-prize)"></i>PRIZES</span><span><i style="background:var(--k-grant)"></i>GRANTS</span><span><i style="background:var(--k-event)"></i>EVENTS</span><span><i style="background:var(--k-fellowship)"></i>FELLOWSHIPS</span></div>
+    </div></div>
+    <div id="cards">${OPPS.map((o, i) => { const d = at(o.d); return `<div class="card opp"><div class="date">${fmt(d, { month: 'short' }).toUpperCase()}<b>${d.getDate()}</b></div>
+      <div class="info"><div class="kind" style="color:${KIND_COLOR[o.k]}">${o.k}<span>${o.org}</span></div><h4>${o.t}</h4><small>${o.span ? 'Closes ' + fmt(d, { day: '2-digit', month: 'short', year: 'numeric' }) : fmt(d, { day: '2-digit', month: 'short', year: 'numeric' })} · ${o.where}</small><p>${o.desc}</p></div>
+      <div class="acts"><button class="sm-btn ${kept.has(o.t) ? 'on' : ''}" data-i="${i}">${ic('bm', 13)}${kept.has(o.t) ? 'Kept' : 'Keep'}</button><button class="sm-btn sq" aria-label="Add to calendar">${ic('cal', 14)}</button></div></div>`; }).join('')}</div>
+  </div>`;
+}
+
+function stub(title) {
+  return `<div class="page"><div class="mono">Biomic Health</div><h1>${title}</h1><p class="lede">This section isn't part of the recreated screens yet.</p></div>`;
+}
+
+/* ---------- router ---------- */
+const PAGES = { path: pathPage, network: networkPage, learn: learnPage, opportunities: oppsPage };
+const TITLES = { today: 'Today', jobs: 'Jobs', grants: 'Fellowships & grants', events: 'Events', calendar: 'My calendar', employers: 'For employers', review: 'Review', certs: 'Certificates', industry: 'Industry', pro: 'Pro', orgs: 'For organisations', people: 'People', advisers: 'Advisers', messages: 'Messages', weekly: 'Weekly review', goals: 'Goals', tracker: 'Tracker', careers: 'Careers', portfolio: 'Portfolio', visibility: 'Visibility' };
+
+function route() {
+  const key = (location.hash.replace(/^#\//, '') || 'path');
+  renderNav(key);
+  document.getElementById('main').innerHTML = (PAGES[key] || (() => stub(TITLES[key] || 'Not found')))();
+  document.title = 'Biomic Health';
+  window.scrollTo(0, 0);
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-i]');
+  if (!b) return;
+  const t = OPPS[b.dataset.i].t;
+  kept.has(t) ? kept.delete(t) : kept.add(t);
+  const y = scrollY; route(); scrollTo(0, y);
+});
+addEventListener('hashchange', route);
+route();
+</script>
+</body>
+</html>
